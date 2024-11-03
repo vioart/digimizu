@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\MagangController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Middleware\RoleMiddleware;
 
 // Halaman Utama
 Route::get('/', function () {
@@ -22,7 +23,7 @@ Route::middleware(['guest'])->group(function () {
 });
 
 // Route untuk anggota yang sudah login
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'role:anggota_magang'])->group(function () {
     Route::get('/dashboard', [MagangController::class, 'dashboard'])->name('dashboard');
     Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
     

@@ -9,7 +9,7 @@
         </div>
 
         <div class="mb-4 text-lg font-semibold">
-            <p class="text-gray-800 dark:text-gray-200">{{ __('Skor Anda:') }} <span class="text-indigo-600 dark:text-indigo-400">{{ $score }} / 10</span></p>
+            <p class="text-gray-800 dark:text-gray-200">{{ __('Skor Anda:') }} <span class="text-indigo-600 dark:text-indigo-400">{{ $calonMagang->test_score }} / 10</span></p>
         </div>
 
         <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
