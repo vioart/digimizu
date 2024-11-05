@@ -2,25 +2,30 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AbsensiResource\Pages;
-use App\Models\Absensi;
+use App\Filament\Exports\RiwayatAbsensiExporter;
+use App\Filament\Resources\RiwayatAbsensiResource\Pages;
+use App\Filament\Resources\RiwayatAbsensiResource\RelationManagers;
+use App\Models\RiwayatAbsensi;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Forms;
-use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\ExportBulkAction;
+use Filament\Tables\Enums\FiltersLayout as EnumsFiltersLayout;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class AbsensiResource extends Resource
+
+class RiwayatAbsensiResource extends Resource
 {
-    protected static ?string $model = Absensi::class;
+    protected static ?string $model = RiwayatAbsensi::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationLabel = 'Absensi';
-
-    protected static ?string $modelLabel = 'Absensi';
-
-    protected static ?string $pluralModelLabel = 'Absensi';
-
-    public static function form(Forms\Form $form): Forms\Form
+    public static function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -40,7 +45,7 @@ class AbsensiResource extends Resource
             ]);
     }
 
-    public static function table(Tables\Table $table): Tables\Table
+    public static function table(Table $table): Table
     {
         return $table
             ->columns([
@@ -53,6 +58,8 @@ class AbsensiResource extends Resource
                 Tables\Columns\TextColumn::make('status'),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('user.name')
+                    ->relationship('user', 'name'),
                 Tables\Filters\SelectFilter::make('tanggal')
                     ->options([
                         'today' => 'Hari Ini',
@@ -78,13 +85,27 @@ class AbsensiResource extends Resource
                         'absen' => 'Absen',
                         'izin' => 'Izin',
                     ]),
-                Tables\Filters\SelectFilter::make('user.name')
-                    ->relationship('user', 'name')
                 
-            ])
+                ], layout: EnumsFiltersLayout::AboveContent) 
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                //
+            ])
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(RiwayatAbsensiExporter::class)
+                    // ->formats([
+                    //     ExportFormat::Csv
+                    // ])
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+                ExportBulkAction::make()
+                    ->exporter(RiwayatAbsensiExporter::class)
+                    ->formats([
+                        ExportFormat::Csv
+                    ])
             ]);
     }
 
@@ -94,13 +115,22 @@ class AbsensiResource extends Resource
             //
         ];
     }
+    public static function getLabel(): string
+    {
+        return 'Riwayat Absensi';
+    }
+
+    public static function getPluralLabel(): string
+    {
+        return 'Riwayat Absensi';
+    }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAbsensi::route('/'),
-            'create' => Pages\CreateAbsensi::route('/create'),
-            'edit' => Pages\EditAbsensi::route('/{record}/edit'),
+            'index' => Pages\ListRiwayatAbsensis::route('/'),
+            'create' => Pages\CreateRiwayatAbsensi::route('/create'),
+            'edit' => Pages\EditRiwayatAbsensi::route('/{record}/edit'),
         ];
     }
 }

@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('asal_instansi')->nullable();
+            $table->string('image')->nullable();
+            $table->enum('role', ['admin', 'anggota_magang'])->default('anggota_magang');
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });

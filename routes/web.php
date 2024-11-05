@@ -25,6 +25,8 @@ Route::middleware(['guest'])->group(function () {
 // Route untuk anggota yang sudah login
 Route::middleware(['auth', 'role:anggota_magang'])->group(function () {
     Route::get('/dashboard', [MagangController::class, 'dashboard'])->name('dashboard');
+    Route::get('/absensi', [AbsensiController::class, 'absensi'])->name('absensi');
+    Route::post('/absensi/validateToken', [AbsensiController::class, 'validateToken'])->name('absensi.validateToken');
     Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
     
     // Profile

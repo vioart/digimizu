@@ -18,15 +18,22 @@ class MagangController extends Controller
         $user = Auth::user();
         $startDate = $user->created_at;
         $dayCount = intval($startDate->diffInDays(Carbon::now()) + 1);
+        
+        if ($dayCount < 1) {
+            $dayCount = 1;
+        }
+
         $presentCount = Absensi::where('user_id', $user->id)->count();
-        $permissionCount = Izin::where('user_id', $user->id)->count();
+        $permissionCount = Absensi::where('user_id', $user->id)
+                            ->where('status', 'izin')
+                            ->count();;
         $absentCount = $dayCount - $presentCount - $permissionCount;
         $todayAttendance = Absensi::where('user_id', $user->id)
-                                  ->whereDate('tanggal', Carbon::today())
-                                  ->first();
-        $todayPermission = Izin::where('user_id', $user->id)
-                               ->whereDate('tanggal', Carbon::today())
-                               ->first();
+                            ->whereDate('tanggal', Carbon::today())
+                            ->first();
+        $todayPermission = Absensi::where('user_id', $user->id)
+                            ->whereDate('tanggal', Carbon::today())
+                            ->first();
 
         return view('magang.dashboard', compact('dayCount', 'presentCount', 'absentCount', 'permissionCount', 'todayAttendance', 'todayPermission'));
     }

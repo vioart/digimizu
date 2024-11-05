@@ -18,7 +18,7 @@
     <header class="fixed w-full z-50 bg-opacity-90 bg-gray-800 backdrop-filter backdrop-blur-lg">
         <nav class="container mx-auto px-6 py-3">
             <div class="flex justify-between items-center">
-                <div class="text-2xl font-bold text-blue-400">SIM</div>
+                <div class="text-2xl font-bold text-blue-400">DIGIMIZU</div>
                 <div class="hidden md:flex space-x-4">
                     <a href="#about" class="text-gray-300 hover:text-blue-400 transition duration-300">Tentang</a>
                     <a href="#features" class="text-gray-300 hover:text-blue-400 transition duration-300">Fitur</a>
