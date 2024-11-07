@@ -13,7 +13,8 @@ class StatsOverviewWidget extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Total Anggota Magang', User::where('role', 'anggota_magang')->count()),
+            Stat::make('Anggota Magang', User::where('role', 'anggota_magang')->where('is_active', 1)->count()),
+            Stat::make('Selesai Magang', User::where('role', 'anggota_magang')->where('is_active', 0)->count()),
             Stat::make('Total Calon Magang', CalonMagang::count()),
             Stat::make('Total Absensi Hari Ini', Absensi::whereDate('tanggal', today())->count()),
         ];

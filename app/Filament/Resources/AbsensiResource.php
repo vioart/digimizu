@@ -36,7 +36,9 @@ class AbsensiResource extends Resource
                     ])
                     ->required(),
                 Forms\Components\TextInput::make('keterangan'),
-                Forms\Components\FileUpload::make('foto')->required(),
+                Forms\Components\FileUpload::make('foto')
+                ->directory('absensi-fotos')
+                ,
             ]);
     }
 
@@ -44,13 +46,18 @@ class AbsensiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.name'),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')
-                    ->date('Y-m-d'),
+                    ->date('Y-m-d')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('waktu')
-                    ->time('H:i:s'),
-                Tables\Columns\ImageColumn::make('foto'),
+                    ->time('H:i:s')
+                    ->sortable(),
+                Tables\Columns\ImageColumn::make('foto')
+                    ->label('Foto'),
                 Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('keterangan'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('tanggal')

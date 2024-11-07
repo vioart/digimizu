@@ -46,10 +46,12 @@ class AttendanceTokensResource extends Resource
                     ->date('Y-m-d')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('token'),
-                Tables\Columns\TextColumn::make('is_active')
+                Tables\Columns\ToggleColumn::make('is_active')
                     ->label('Status')
-                    ->formatStateUsing(fn ($state) => $state == '1' ? 'Aktif' : 'Tidak Aktif')
-                    ->sortable(),
+                    ->beforeStateUpdated(function (AttendanceTokens $record) {
+                        AttendanceTokens::where('id', '!=', $record->id)->update(['is_active' => false]);
+                }),
+
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('Status')

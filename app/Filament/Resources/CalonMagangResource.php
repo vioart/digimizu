@@ -40,11 +40,16 @@ class CalonMagangResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\TextColumn::make('asal_instansi'),
-                Tables\Columns\TextColumn::make('test_score'),
-                Tables\Columns\TextColumn::make('test_date'),
+                Tables\Columns\TextColumn::make('name')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('email')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('asal_instansi')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('test_score')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('test_date')
+                    ->sortable(),
             ])
             ->filters([
                 //

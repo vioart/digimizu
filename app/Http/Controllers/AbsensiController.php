@@ -6,6 +6,7 @@ use App\Models\Absensi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\AttendanceTokens;
+use Illuminate\Support\Facades\Log;
 
 class AbsensiController extends Controller
 {
@@ -36,15 +37,17 @@ class AbsensiController extends Controller
         $request->validate([
             'token' => 'required|string',
         ]);
+
         $token = $request->input('token');
-        $userId = Auth::id();
 
         $attendanceToken = AttendanceTokens::where('token', $token)
             ->where('is_active', 1)
             ->orderBy('tanggal', 'desc')
             ->first();
-
-        if ($attendanceToken) {
+        
+            Log::info('Tanggal dari token: ' . $attendanceToken->tanggal);
+            Log::info('Tanggal sekarang (now()): ' . now()->toDateString());
+        if ($attendanceToken && $attendanceToken->tanggal->toDateString() === now()->toDateString()) {
             return redirect()->route('absensi')->with('success', 'Token valid! Silakan lakukan absensi.');
         } else {
             return redirect()->back()->with('error', 'Token tidak valid. Silakan coba lagi.');

@@ -17,6 +17,10 @@ use Filament\Tables\Enums\FiltersLayout as EnumsFiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Support\Facades\Log;
+use Filament\Tables\Enums\FiltersLayout;
 
 
 class RiwayatAbsensiResource extends Resource
@@ -49,53 +53,85 @@ class RiwayatAbsensiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.name'),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')
-                    ->date('Y-m-d'),
+                    ->date('Y-m-d')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('waktu')
-                    ->time('H:i:s'),
+                    ->time('H:i:s')
+                    ->sortable(),
                 Tables\Columns\ImageColumn::make('foto'),
                 Tables\Columns\TextColumn::make('status'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('user.name')
                     ->relationship('user', 'name'),
-                Tables\Filters\SelectFilter::make('tanggal')
+
+                Tables\Filters\SelectFilter::make('bulan')
                     ->options([
-                        'today' => 'Hari Ini',
-                        'yesterday' => 'Kemarin',
-                        'last_7_days' => '7 Hari Terakhir',
-                        'last_30_days' => '30 Hari Terakhir',
+                        '1' => 'Januari',
+                        '2' => 'Februari',
+                        '3' => 'Maret',
+                        '4' => 'April',
+                        '5' => 'Mei',
+                        '6' => 'Juni',
+                        '7' => 'Juli',
+                        '8' => 'Agustus',
+                        '9' => 'September',
+                        '10' => 'Oktober',
+                        '11' => 'November',
+                        '12' => 'Desember',
                     ])
                     ->query(function ($query, $data) {
-                        $today = now()->toDateString();
-                        switch ($data) {
-                            case 'today':
-                                return $query->whereDate('tanggal', $today);
-                            case 'yesterday':
-                                return $query->whereDate('tanggal', now()->subDay()->toDateString());
-                            case 'last_7_days':
-                                return $query->whereDate('tanggal', '>=', now()->subDays(7));
-                            case 'last_30_days':
-                                return $query->whereDate('tanggal', '>=', now()->subDays(30));
+                        $bulan = $data['value'] ?? null;
+
+                        if (!in_array($bulan, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'])) {
+                            return $query;
                         }
+
+
+                        return $query->whereMonth('tanggal', $bulan);
+
                     }),
+                    
+
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
                         'absen' => 'Absen',
                         'izin' => 'Izin',
                     ]),
                 
-                ], layout: EnumsFiltersLayout::AboveContent) 
+                     
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label('Dari'),
+                        DatePicker::make('created_until')
+                            ->label('Sampai')
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+
+                ], layout: FiltersLayout::AboveContent) 
             ->actions([
                 //
             ])
             ->headerActions([
                 ExportAction::make()
                     ->exporter(RiwayatAbsensiExporter::class)
-                    // ->formats([
-                    //     ExportFormat::Csv
-                    // ])
+                    ->formats([
+                        ExportFormat::Xlsx
+                    ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -104,7 +140,7 @@ class RiwayatAbsensiResource extends Resource
                 ExportBulkAction::make()
                     ->exporter(RiwayatAbsensiExporter::class)
                     ->formats([
-                        ExportFormat::Csv
+                        ExportFormat::Xlsx
                     ])
             ]);
     }

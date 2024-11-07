@@ -37,14 +37,20 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\TextColumn::make('role'),
+                Tables\Columns\TextColumn::make('name')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('email')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('role')
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('name')
+                ->options(
+                    User::query()->pluck('name', 'name')
+                )
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -14,12 +14,29 @@ class RiwayatAbsensiExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            // ExportColumn::make('user_id'),
+            ExportColumn::make('user.name')->label('Nama'),
             ExportColumn::make('tanggal'),
             ExportColumn::make('waktu'),
             ExportColumn::make('status'),
-            ExportColumn::make('Keterangan'),
+            ExportColumn::make('keterangan'),
         ];
+    }
+     // Fungsi untuk mendapatkan data export
+    public static function getExportData(): array
+    {
+        // Ambil data dengan eager load relasi user
+        $absensiRecords = RiwayatAbsensi::with('user')->get();
+
+        // Map data agar bisa diekspor dengan benar
+        return $absensiRecords->map(function ($record) {
+            return [
+                'user_name' => $record->user ? $record->user->name : 'Unknown',  // Pastikan data user ada
+                'tanggal' => $record->tanggal,
+                'waktu' => $record->waktu,
+                'status' => $record->status,
+                'keterangan' => isset($record->keterangan) ? $record->keterangan : 'No Description',  // Pengecekan untuk keterangan
+            ];
+        })->toArray();
     }
 
     public static function getCompletedNotificationBody(Export $export): string
