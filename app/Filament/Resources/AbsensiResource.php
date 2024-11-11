@@ -25,7 +25,10 @@ class AbsensiResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
+                    ->relationship('user', 'name', function ($query) {
+                        $query->where('role', 'anggota_magang');
+                    })
+                    // ->relationship('user', 'name')
                     ->required(),
                 Forms\Components\DatePicker::make('tanggal')->required(),
                 Forms\Components\TimePicker::make('waktu')->required(),
@@ -47,6 +50,7 @@ class AbsensiResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
+                    ->label('Anggota Magang')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->date('Y-m-d')
@@ -60,12 +64,17 @@ class AbsensiResource extends Resource
                 Tables\Columns\TextColumn::make('keterangan'),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('user.name')
+                    ->label('Anggota Magang')
+                    ->relationship('user', 'name', function ($query) {
+                        $query->where('role', 'anggota_magang');
+                    }),
                 Tables\Filters\SelectFilter::make('tanggal')
                     ->options([
                         'today' => 'Hari Ini',
                         'yesterday' => 'Kemarin',
                         'last_7_days' => '7 Hari Terakhir',
-                        'last_30_days' => '30 Hari Terakhir',
+                        'last_31_days' => '31 Hari Terakhir',
                     ])
                     ->query(function ($query, $data) {
                         $today = now()->toDateString();
@@ -76,8 +85,8 @@ class AbsensiResource extends Resource
                                 return $query->whereDate('tanggal', now()->subDay()->toDateString());
                             case 'last_7_days':
                                 return $query->whereDate('tanggal', '>=', now()->subDays(7));
-                            case 'last_30_days':
-                                return $query->whereDate('tanggal', '>=', now()->subDays(30));
+                            case 'last_31_days':
+                                return $query->whereDate('tanggal', '>=', now()->subDays(31));
                         }
                     }),
                 Tables\Filters\SelectFilter::make('status')
@@ -85,9 +94,7 @@ class AbsensiResource extends Resource
                         'absen' => 'Absen',
                         'izin' => 'Izin',
                     ]),
-                Tables\Filters\SelectFilter::make('user.name')
-                    ->relationship('user', 'name')
-                
+                 
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

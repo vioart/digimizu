@@ -29,10 +29,7 @@
                         </div>
                         <div class="mb-4">
                             <x-label for="status_absen" value="{{ __('Status Absen') }}" />
-                            <select id="status_absen" name="status_absen" class="block mt-1 w-full">
-                                <option value="absen">Absen</option>
-                                <option value="izin">Izin</option>
-                            </select>
+                            <x-input id="status_absen" class="block mt-1 w-full" type="text" name="status_absen" value="absen" required readonly />
                         </div>
                         <div class="mb-4">
                             <x-label for="keterangan" value="{{ __('Keterangan') }}" />

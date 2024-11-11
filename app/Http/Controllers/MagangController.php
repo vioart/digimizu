@@ -23,11 +23,13 @@ class MagangController extends Controller
             $dayCount = 1;
         }
 
-        $presentCount = Absensi::where('user_id', $user->id)->count();
+        $presentCount = Absensi::where('user_id', $user->id)
+                            ->where('status', 'absen')
+                            ->count();
         $permissionCount = Absensi::where('user_id', $user->id)
                             ->where('status', 'izin')
                             ->count();;
-        $absentCount = $dayCount - $presentCount - $permissionCount;
+        $absentCount = max(0, $dayCount - $presentCount - $permissionCount);
         $todayAttendance = Absensi::where('user_id', $user->id)
                             ->whereDate('tanggal', Carbon::today())
                             ->first();

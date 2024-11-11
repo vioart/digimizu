@@ -2,32 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Absensi;
 use Illuminate\Http\Request;
+use App\Models\Izin;
 use Illuminate\Support\Facades\Auth;
 use App\Models\AttendanceTokens;
+use Carbon\Carbon;
 
-class AbsensiController extends Controller
+class IzinController extends Controller
 {
     public function store(Request $request)
     {
         $request->validate([
             'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:300',
+            'dari_tanggal' => 'required|date',
+            'sampai_tanggal' => 'required|date|after_or_equal:dari_tanggal',
         ]);
 
-        $absensi = new Absensi();
-        $absensi->user_id = Auth::id();
-        $absensi->tanggal = now()->toDateString();
-        $absensi->waktu = now()->toTimeString();
+        $startDate = Carbon::parse($request->input('dari_tanggal'));
+        $endDate = Carbon::parse($request->input('sampai_tanggal'));
+        $status = $request->input('status_absen');
+        $keterangan = $request->input('keterangan');
 
         if ($request->hasFile('foto')) {
             $fotoPath = $request->file('foto')->store('absensi-fotos', 'public');
-            $absensi->foto = $fotoPath;
         }
 
-        $absensi->status = $request->input('status_absen');
-        $absensi->keterangan = $request->input('keterangan');
-        $absensi->save();
+        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
+            $izin = new Izin();
+            $izin->user_id = Auth::id();
+            $izin->tanggal = $date->toDateString();
+            $izin->waktu = now()->toTimeString();
+            $izin->foto = $fotoPath;
+            $izin->status = $status;
+            $izin->keterangan = $keterangan;
+            $izin->save();
+        }
 
         return redirect()->route('dashboard')->with('success', 'Absensi berhasil dicatat.');
     }
@@ -45,18 +54,16 @@ class AbsensiController extends Controller
             ->first();
         
         if ($attendanceToken && $attendanceToken->tanggal->toDateString() === now()->toDateString()) {
-            return redirect()->route('absensi')->with('success', 'Token valid! Silakan lakukan absensi.');
+            return redirect()->route('izin')->with('success', 'Token valid! Silakan lakukan absensi.');
         } else {
             return redirect()->back()->with('error', 'Token tidak valid. Silakan coba lagi.');
         }
 
     }
 
-
-    public function absensi()
+    public function izin()
     {
         $user = Auth::user();
-        return view('magang.absensi', compact('user'));
+        return view('magang.izin', compact('user'));
     }
-
 }

@@ -34,7 +34,9 @@ class RiwayatAbsensiResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
+                    ->relationship('user', 'name', function ($query) {
+                        $query->where('role', 'anggota_magang');
+                    })
                     ->required(),
                 Forms\Components\DatePicker::make('tanggal')->required(),
                 Forms\Components\TimePicker::make('waktu')->required(),
@@ -54,6 +56,7 @@ class RiwayatAbsensiResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
+                    ->label('Anggota Magang')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->date('Y-m-d')
@@ -66,7 +69,10 @@ class RiwayatAbsensiResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('user.name')
-                    ->relationship('user', 'name'),
+                    ->label('Anggota Magang')
+                    ->relationship('user', 'name', function ($query) {
+                        $query->where('role', 'anggota_magang');
+                    }),
 
                 Tables\Filters\SelectFilter::make('bulan')
                     ->options([

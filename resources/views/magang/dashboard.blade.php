@@ -111,11 +111,15 @@
                                 {{ __('Absensi') }}
                             </x-button>
 
+                            <x-button id="openIzinValidation" class="ml-2 bg-yellow-500">
+                                {{ __('Ajukan Izin') }}
+                            </x-button>
 
-                            <div id="validation" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+
+                            <div id="validationAbsensi" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
                                 <div class="bg-white rounded-lg p-6 shadow-lg">
                                     <h2 class="text-xl font-semibold mb-4">Masukkan Token</h2>
-                                    <form id="tokenForm" method="POST" action="{{ route('absensi.validateToken') }}">
+                                    <form id="tokenFormAbsensi" method="POST" action="{{ route('absensi.validateToken') }}">
                                         @csrf
                                         <div class="mb-4">
                                             <x-label for="token" value="{{ __('Token') }}" />
@@ -123,7 +127,25 @@
                                         </div>
                                         <div class="flex space-x-4">
                                             <x-button type="submit" class="w-1/2 h-12 flex items-center justify-center">{{ __('Submit') }}</x-button>
-                                            <x-button id="closeValidation" class="w-1/2 h-12 bg-red-500 text-white flex items-center justify-center">{{ __('Tutup') }}</x-button>
+                                            <x-button id="closeValidationAbsensi" class="w-1/2 h-12 bg-red-500 text-white flex items-center justify-center">{{ __('Tutup') }}</x-button>
+                                        </div>
+                                    </form>
+                                    
+                                </div>
+                            </div>
+
+                            <div id="validationIzin" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+                                <div class="bg-white rounded-lg p-6 shadow-lg">
+                                    <h2 class="text-xl font-semibold mb-4">Masukkan Token Izin</h2>
+                                    <form id="tokenFormIzin" method="POST" action="{{ route('izin.validateToken') }}">
+                                        @csrf
+                                        <div class="mb-4">
+                                            <x-label for="token" value="{{ __('Token') }}" />
+                                            <x-text-input id="token" class="block mt-1 w-full" name="token" required />
+                                        </div>
+                                        <div class="flex space-x-4">
+                                            <x-button type="submit" class="w-1/2 h-12 flex items-center justify-center">{{ __('Submit') }}</x-button>
+                                            <x-button id="closeValidationIzin" class="w-1/2 h-12 bg-red-500 text-white flex items-center justify-center">{{ __('Tutup') }}</x-button>
                                         </div>
                                     </form>
                                     
@@ -132,11 +154,24 @@
 
                             <script>
                                 document.getElementById('openValidation').onclick = function() {
-                                    document.getElementById('validation').classList.remove('hidden');
+                                    document.getElementById('validationAbsensi').classList.remove('hidden');
+                                    document.getElementById('tokenFormAbsensi').action = "{{ route('absensi.validateToken') }}";
                                 };
-                                document.getElementById('closeValidation').onclick = function() {
-                                    document.getElementById('validation').classList.add('hidden');
+
+                                document.getElementById('closeValidationAbsensi').onclick = function() {
+                                    document.getElementById('validationAbsensi').classList.add('hidden');
                                 };
+
+                                document.getElementById('openIzinValidation').onclick = function() {
+                                    document.getElementById('validationIzin').classList.remove('hidden');
+                                    document.getElementById('tokenFormIzin').action = "{{ route('izin.validateToken') }}";
+                                };
+
+                                document.getElementById('closeValidationIzin').onclick = function() {
+                                    document.getElementById('validationIzin').classList.add('hidden');
+                                };
+
+                                
                             </script>
                         @endif
                     </div>

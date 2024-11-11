@@ -9,18 +9,20 @@ class Izin extends Model
 {
     use HasFactory;
 
-    protected $table = 'izin';
+    protected $table = 'absensi';
 
     protected $fillable = [
         'user_id',
         'tanggal',
-        'alasan',
-        'bukti',
+        'waktu',
+        'foto',
         'status',
+        'keterangan',
     ];
 
     protected $casts = [
         'tanggal' => 'date',
+        'waktu' => 'datetime',
     ];
 
     public function user()
